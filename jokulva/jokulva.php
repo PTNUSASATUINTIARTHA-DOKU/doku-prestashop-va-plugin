@@ -258,7 +258,7 @@ class JokulVa extends PaymentModule
 			],
 
 			[
-				'id_option' => 'https://jokul.doku.com',
+				'id_option' => 'https://api.doku.com',
 				'name' 		=> 'Production',
 			],
 		];
