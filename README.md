@@ -5,8 +5,7 @@ In order to facilitate the development of e-commerce through Prestashop, Doku as
 ## Doku Jokul Payment Options Avalaible on Prestashop Plugin: ##
 
 1. Bank Transfer:
-   - Mandiri SYariah
-   - DOKU VA
+   - Mandiri Syariah
    
    
 ## Installation ##
@@ -16,13 +15,10 @@ Minimum Requirements:
 3. MySQL version v5.6 or greater
 
 ## Installation ##
-1. Login to your Prestashop admin panel.
-2. Go to Plugins menu, click add new and search "Doku".
-3. Install and follow the instructions.
-4. Manual Installation
-5. Download the plugin from this repository.
-6. Extract the plugin, then rename the folder modules as jokulva
-7. Upload the unzipped plugin folder to your Prestashop installation's prestashop-content/plugins/ directory on your control panel
-8. Install & enable the plugin from the Plugins menu within the Prestashop admin panel.
-9. Go to menu Prestashop > Settings > Payment > Doku > Manage, fill the configuration fields.
-10. Any further about payment process, follow the instructions on the documentation above.
+1. Download the plugin from this repository
+2. Extract the plugin, then rename the folder modules as jokulva
+3. Login to your Prestashop admin panel.
+4. Go to Plugins modul , click upload modul
+5.Install and follow the instructions
+6. Go to menu Prestashop > Modules > Jokul - Virtual Account  > Configure , fill the configuration fields
+7. Any further about payment process, follow the instructions on the documentation above
