@@ -41,7 +41,7 @@ Jokul makes it easy for you accept payments from various channels. Jokul also hi
 1. You will find "Jokul - Virtual Account", click "Configure" button
 1. Here is the fileds that you required to set:
 
-    ![VA Configuration](/assets/va-configuration.png)
+    ![VA Configuration](https://i.ibb.co/nL6m3dq/va-configuration.png)
 
     - **Title**: the payment channel name that will shown to the customers. You can use "Virtual Account" or "Bank Transfer" for example
     - **Description**: the description of the payment channel that will shown to the customers. You can "Please select Bank you wish to proceed the transaction"
