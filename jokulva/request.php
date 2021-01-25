@@ -23,12 +23,13 @@ switch ($task) {
 
 			$config = $jokulva->getServerConfig();
 
-			$order_id = $jokulva->get_order_id($trx['invoice_number']);
+			$orderIdDb = $jokulva->get_order_id_jokul($trx['invoice_number'], $json_data_input['virtual_account_info']['virtual_account_number']);
+
+			$order_id = $jokulva->get_order_id($orderIdDb);
 
 			if (!$order_id) {
 				$order_state = $config['DOKU_AWAITING_PAYMENT'];
 				$trx['amount'] = $json_data_input["order"]["amount"];
-				// $jokulva->validateOrder($trx['invoice_number'], $order_state, $trx['amount'], $jokulva->displayName, $trx['invoice_number']);
 				$order_id = $jokulva->get_order_id($trx['invoice_number']);
 			}
 
@@ -40,40 +41,33 @@ switch ($task) {
 				$trx['raw_post_data']         = file_get_contents('php://input');
 				$trx['ip_address']            = $jokulva->getipaddress();
 				$trx['amount']                = $json_data_input['order']['amount'];
+				$trx['invoice_number']        = $json_data_input['order']['invoice_number'];
+				$trx['order_id']       		  = $orderIdDb;
 				$trx['payment_channel']       = $json_data_input['channel']['id'];
 				$trx['payment_code']          = $json_data_input['virtual_account_info']['virtual_account_number'];
 				$trx['doku_payment_datetime'] = $json_data_input['virtual_account_payment']['date'];
 				$trx['process_datetime']      = date("Y-m-d H:i:s");
-				// Check Transaction Exist
-				$result = $jokulva->checkTrx($trx);
+
+				$result = $jokulva->checkTrxNotify($trx);
 
 				if ($result < 1) {
-					error_log('VA Number : ' . $json_data_input['virtual_account_info']['virtual_account_number'] . ' Transaction Not Found');
 					http_response_code(404);
-					returnResponse($json_data_input);
 				} else {
-					$order_id = $jokulva->get_order_id($trx['invoice_number']);
+					$order_id = $jokulva->get_order_id($orderIdDb);
 					$trx['message'] = "Notify process message come from DOKU. Success : completed";
 					$status         = "completed";
 					$status_no      = $config['DOKU_PAYMENT_RECEIVED'];
 					$jokulva->emptybag();
 
 					$jokulva->set_order_status($order_id, $status_no);
-
-					# Insert transaction notify to table jokulva
-					$jokulva->add_jokulva($trx);
-					returnResponse($json_data_input);
+					
+					$checkStatusTrx = $jokulva->checkStatusTrx($trx);
+					if ($checkStatusTrx < 1) {
+						$jokulva->add_jokulva($trx);
+					}
 				}
 			} else {
 				http_response_code(400);
-				returnResponse($json_data_input);
-				error_log('VA Number ' . $json_data_input['virtual_account_info']['virtual_account_number'] . ' CheckSum Doesn Match : ' . $words);
-
-				$trx['message']       = "WORDS not match";
-				$trx['raw_post_data'] = "WORDS component: " . $words_components;
-
-				$jokulva->add_jokulva($trx);
-				die;
 			}
 		}
 
@@ -110,7 +104,7 @@ function generateSignature($headers, $secret)
 	$rawSignature = "Client-Id:" . $headers['Client-Id'] . "\n"
 		. "Request-Id:" . $headers['Request-Id'] . "\n"
 		. "Request-Timestamp:" . $headers['Request-Timestamp'] . "\n"
-		. "Request-Target:" . $headers['Request-Target'] . "\n"
+		. "Request-Target:" . "/modules/jokulva/request.php?task=notify" . "\n"
 		. "Digest:" . $digest;
 
 	$signature = base64_encode(hash_hmac('sha256', $rawSignature, $secret, true));

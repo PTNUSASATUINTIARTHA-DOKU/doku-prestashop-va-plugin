@@ -7,13 +7,9 @@
 <script type="text/javascript">
 		function checkChannel() {
 				var ischeck = ValidateInputs();
-				if ( ischeck ) {
-				
-						$.post( "{$urls.base_url}/modules/jokulva/validate.php", { TRANSIDMERCHANT: "{$TRANSIDMERCHANT}", AMOUNT: "{$AMOUNT}" } );
-						console.log('checkChannel');
+				if (ischeck) {
 						return true;
-				}
-				else {
+				} else {
 						alert("Please choose Payment Channel to use!");
 						console.log('error');
 						return false;
@@ -30,7 +26,7 @@
 		
 		function ValidateInputs() {
 				var x = false;
-				if(document.formDokuOrder.PAYMENTCHANNEL.value!=null){
+				if(document.formDokuOrder.PAYMENTCHANNEL.value != ''){
 					x = true;
 				}
 				return x;
@@ -38,7 +34,6 @@
 		function channelVA(paymentChannel){
 			console.log(paymentChannel)
 		
-				document.formDokuOrder.MALLID.value = "{$MALLID}";
 				document.formDokuOrder.action = '{$urls.base_url}/modules/jokulva/merchanthostedva.php';
 				document.formDokuOrder.CUSTOMERID.value = '{$URL_MERCHANTHOSTED}';
 				document.formDokuOrder.EXP_TIME.value = '{$EXPIRY_TIME}';
@@ -88,14 +83,26 @@
 			<ul><input type="radio" name="PAYMENTCHANNEL" value="MANDIRI_SYARIAH" onclick="return channelVA('MANDIRI_SYARIAH')"> Mandiri Syariah</ul>
 		{/if}												
 
+		{if $PAYMENT_CHANNELS_DOKU_VA}
+			<ul><input type="radio" name="PAYMENTCHANNEL" value="DOKU_VA" onclick="return channelVA('DOKU_VA')"> DOKU VA</ul>
+		{/if}
+
+		{if $PAYMENT_CHANNELS_BCA}
+			<ul><input type="radio" name="PAYMENTCHANNEL" value="BCA" onclick="return channelVA('BCA')"> Bank Central Asia</ul>
+		{/if}
+
+		{if $PAYMENT_CHANNELS_PERMATA}
+			<ul><input type="radio" name="PAYMENTCHANNEL" value="PERMATA" onclick="return channelVA('PERMATA')"> Permata</ul>
+		{/if}
+
 		</li>
 		
 		<input type="submit" class="btn btn-primary" value="ORDER WITH AN OBLIGATION TO PAY" onclick="return checkChannel();">
 		
-    	<input type=hidden name="MALLID"           value="{$MALLID}">
-    	<input type=hidden name="TRANSIDMERCHANT"  value="{$TRANSIDMERCHANT}">
-    	<input type=hidden name="AMOUNT"           value="{$AMOUNT}">
-		<input type=hidden name="PURCHASEAMOUNT"   value="{$PURCHASEAMOUNT}">
+		<input type=hidden name="REGID"  		   value="{$REGID}">
+		<input type=hidden name="DATETIME"  	   value="{$DATETIME}">
+    	<input type=hidden name="invoice_number"   value="{$invoice_number}">
+    	<input type=hidden name="amount"           value="{$amount}">
     	<input type=hidden name="REQUESTDATETIME"  value="{$REQUESTDATETIME}">
     	<input type=hidden name="CURRENCY"         value="{$CURRENCY}">
     	<input type=hidden name="PURCHASECURRENCY" value="{$PURCHASECURRENCY}">				
@@ -112,8 +119,7 @@
     	<input type=hidden name="SHIPPING_COUNTRY" value="{$SHIPPING_COUNTRY}"> 
     	<input type=hidden name="CUSTOMERID" 	   value="{$EMAIL}"> 
 		<input type=hidden name="SHIPPING_ADDRESS" value="{$SHIPPING_ADDRESS}"> 
-    	<input type=hidden name="SHIPPING_CITY"    value="{$SHIPPING_CITY}"> 
-		<input type=hidden name="WORDS"       	   value="{$WORDS}"> 
+    	<input type=hidden name="SHIPPING_CITY"    value="{$SHIPPING_CITY}">
     	<input type=hidden name="SHIPPING_ZIPCODE" value="{$SHIPPING_ZIPCODE}"> 				
 
 </form>

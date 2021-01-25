@@ -17,40 +17,31 @@ class JokulVaRequestModuleFrontController extends ModuleFrontController
 					die;
 				}
 
+				$rawdata =	"PaymentCode:".$_POST['PAYMENTCODE'] . "\n".
+							"PaymentExpired:".$_POST['PAYMENTEXP'] . "\n".
+            				"PaymentHow:".$_POST['PAYMENTHOW'];
+
 				$trx = array();
-
-				$WORDS = $_POST['WORDS'];
-				$BODY = $_POST['BODY'];
-				$SIGNATURE = $_POST['SIGNATURE'];
-
-				$rawdata =	"Words:".$WORDS ."\n". 
-            				"Data-Body:".$BODY . "\n".
-            				"Signature:".$SIGNATURE;
-
-				$trx['words']                	= $_POST['WORDS'];
 				$trx['amount']               	= $_POST['AMOUNT'];
-				$trx['invoice_number']      	= $_POST['TRANSIDMERCHANT'];
 				$trx['status_code']          	= $_POST['STATUSCODE'];
-				$trx['payment_exp']          	= $_POST['PAYMENTEXP'];
-				$trx['payment_how']          	= $_POST['PAYMENTHOW'];
+				$trx['payment_code']          	= $_POST['PAYMENTCODE'];
 				$trx['raw_post_data']          	= $rawdata;
-
-				if (isset($_POST['PAYMENTCODE'])) $trx['payment_code'] = $_POST['PAYMENTCODE'];
 
 				$config = $jokulva->getServerConfig();
 
-				$order_id = $jokulva->get_order_id($trx['invoice_number']);
+				$order_id = $jokulva->get_order_id($_POST['TRANSIDMERCHANT']);
 
 				if (!$order_id) {
-					$order_state = $config['DOKU_AWAITING_PAYMENT'];
+					$order_state 				  = $config['DOKU_AWAITING_PAYMENT'];
 					$trx['amount']                = $_POST['AMOUNT'];
-					$jokulva->validateOrder($trx['invoice_number'], $order_state, $trx['amount'], $jokulva->displayName, $trx['invoice_number']);
-					$order_id = $jokulva->get_order_id($trx['invoice_number']);
+					$jokulva->validateOrder($_POST['TRANSIDMERCHANT'], $order_state, $trx['amount'], $jokulva->displayName, $_POST['TRANSIDMERCHANT']);
+					$order_id = $jokulva->get_order_id($_POST['TRANSIDMERCHANT']);
 				}
 
 				$order = new Order($order_id);
+				$trx['invoice_number'] = $order->reference;
+				$trx['order_id'] = $_POST['TRANSIDMERCHANT'];
 				$trx_amount = number_format($order->getOrdersTotalPaid(), 2, '.', '');
-				$words = $trx['words'];
 				
 					$trx['payment_channel']  = $_POST['PAYMENTCHANNEL'];
 					$trx['ip_address']       = $jokulva->getipaddress();
@@ -87,6 +78,18 @@ class JokulVaRequestModuleFrontController extends ModuleFrontController
 
 							case "MANDIRI_SYARIAH":
 								$payment_channel = "Mandiri Syariah VA";
+								break;
+								
+							case "DOKU_VA":
+								$payment_channel = "DOKU VA";
+								break;
+
+							case "PERMATA":
+								$payment_channel = "Permata";
+								break;
+
+							case "BCA":
+								$payment_channel = "Bank Central Asia";
 								break;
 
 							default:
@@ -133,9 +136,9 @@ class JokulVaRequestModuleFrontController extends ModuleFrontController
 						
 						Configuration::updateValue('PAYMENT_AMOUNT',$trx_amount);
 						
-						$newDate = new DateTime($trx['payment_exp']);
-						Configuration::updateValue('PAYMENT_EXP',$newDate->format('d M yy H:m'));
-						Configuration::updateValue('PAYMENTHOW',$trx['payment_how']);
+						$newDate = new DateTime($_POST['PAYMENTEXP']);
+						Configuration::updateValue('PAYMENT_EXP',$newDate->format('d M Y H:m'));
+						Configuration::updateValue('PAYMENTHOW',$_POST['PAYMENTHOW']);
 						
 
 						$config = Configuration::getMultiple(array('SERVER_DEST', 'MALL_ID_DEV', 'SHARED_KEY_DEV', 'MALL_ID_PROD', 'SHARED_KEY_PROD'));
@@ -156,7 +159,6 @@ class JokulVaRequestModuleFrontController extends ModuleFrontController
 							'{jokulva_shared_key}'  => $SHARED_KEY
 						);
 
-						// $this->module->validateOrder($cart->id, Configuration::get('PS_OS_BANKWIRE'), $total, $this->module->displayName, NULL, $mailVars, (int)$currency->id, false, $customer->secure_key);
 						Tools::redirect('index.php?controller=order-confirmation&id_cart='.$cart->id.'&id_module='.$this->module->id.'&id_order='.$this->module->currentOrder.'&key='.$customer->secure_key);
 				break;
             case "redirectFailed":

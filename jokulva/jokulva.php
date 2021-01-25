@@ -44,8 +44,7 @@ class JokulVa extends PaymentModule
 		$this->description      = $this->l('DOKU is Indonesia\'s largest and fastest growing provider of electronic payment. We provide electronic payment processing, online and in mobile applications. Enabling e-Commerce merchants of any size to accept a wide range of online payment options, from credit cards to emerging payment types.');
 		$this->confirmUninstall = $this->l('Are you sure you want to uninstall?');
 
-		$this->ip_range         = '103.10.129';
-		$this->va_channel       = array("MANDIRI", "MANDIRI_SYARIAH");
+		$this->va_channel       = array("MANDIRI", "MANDIRI_SYARIAH", "DOKU_VA", "BCA", "PERMATA");
 	}
 
 	public function install()
@@ -58,6 +57,8 @@ class JokulVa extends PaymentModule
 		$this->registerHook('updateOrderStatus');
 		$this->addDOKUOrderStatus();
 		$this->copyEmailFiles();
+		Configuration::updateGlobalValue('DOKU_NAME', "Virtual Account");	
+		Configuration::updateGlobalValue('DOKU_DESCRIPTION', "Please select payment channel");
 		return true;
 	}
 
@@ -141,6 +142,9 @@ class JokulVa extends PaymentModule
 			Configuration::deleteByName('PAYMENT_CHANNELS');
 			Configuration::deleteByName('PAYMENT_CHANNELS_MANDIRI');
 			Configuration::deleteByName('PAYMENT_CHANNELS_MANDIRI_SYARIAH');
+			Configuration::deleteByName('PAYMENT_CHANNELS_DOKU_VA');
+			Configuration::deleteByName('PAYMENT_CHANNELS_PERMATA');
+			Configuration::deleteByName('PAYMENT_CHANNELS_BCA');
 
 			parent::uninstall();
 			Db::getInstance()->Execute("DROP TABLE `" . _DB_PREFIX_ . "jokulva`");
@@ -159,6 +163,7 @@ class JokulVa extends PaymentModule
 			`process_datetime` DATETIME NULL, 
 			`doku_payment_datetime` DATETIME NULL,   
 			`invoice_number` VARCHAR(30) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+			`order_id` VARCHAR(30) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
 			`amount` DECIMAL( 20,2 ) NOT NULL DEFAULT '0',
 			`notify_type` VARCHAR( 1 ) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
 			`response_code` VARCHAR( 4 ) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
@@ -209,6 +214,9 @@ class JokulVa extends PaymentModule
 			Configuration::updateValue('PAYMENT_CHANNELS', 						trim(Tools::getValue('payment_channels')));
 			Configuration::updateValue('PAYMENT_CHANNELS_MANDIRI', 				trim(Tools::getValue('payment_channels_MANDIRI')));
 			Configuration::updateValue('PAYMENT_CHANNELS_MANDIRI_SYARIAH', 		trim(Tools::getValue('payment_channels_MANDIRI_SYARIAH')));
+			Configuration::updateValue('PAYMENT_CHANNELS_DOKU_VA', 				trim(Tools::getValue('payment_channels_DOKU_VA')));
+			Configuration::updateValue('PAYMENT_CHANNELS_PERMATA', 				trim(Tools::getValue('payment_channels_PERMATA')));
+			Configuration::updateValue('PAYMENT_CHANNELS_BCA', 					trim(Tools::getValue('payment_channels_BCA')));
 		}
 		$this->_html .= '<div class="alert alert-success conf confirm"> ' . $this->l('Settings updated') . '</div>';
 	}
@@ -246,19 +254,33 @@ class JokulVa extends PaymentModule
 			[
 				'id_option' => 'MANDIRI_SYARIAH',
 				'name' 		=> 'Mandiri Syariah',
+			],
+
+			[
+				'id_option' => 'DOKU_VA',
+				'name' 		=> 'DOKU VA',
+			],
+
+			[
+				'id_option' => 'BCA',
+				'name' 		=> 'Bank Central Asia',
+			],
+
+			[
+				'id_option' => 'PERMATA',
+				'name' 		=> 'Bank Permata',
 			]
 
 		];
 
 		$environment = [
-
 			[
 				'id_option' => 'https://api-sandbox.doku.com',
 				'name' 		=> 'Sandbox',
 			],
 
 			[
-				'id_option' => 'https://api.doku.com',
+				'id_option' => 'https://jokul.doku.com',
 				'name' 		=> 'Production',
 			],
 		];
@@ -500,7 +522,7 @@ class JokulVa extends PaymentModule
 
 		# Set Redirect Parameter
 		$CURRENCY            			= 360;
-		$TRANSIDMERCHANT     			= intval($cart->id);
+		$invoiceNumber  	   			= intval($cart->id);
 		$NAME                			= Tools::safeOutput($address->firstname . ' ' . $address->lastname);
 		$EMAIL               			= $customer->email;
 		$ADDRESS             			= Tools::safeOutput($address->address1 . ' ' . $address->address2);
@@ -511,28 +533,16 @@ class JokulVa extends PaymentModule
 		$IP_ADDRESS          			= $this->getipaddress();
 		$PROCESS_DATETIME    			= date("Y-m-d H:i:s");
 		$PROCESS_TYPE        			= "REQUEST";
-		$AMOUNT              			= $total;
+		$amount              			= $total;
 		$PHONE               			= trim($address->phone_mobile);
 		$PAYMENT_CHANNEL     			= "";
 		$EXPIRY_TIME 					= Tools::safeOutput(Configuration::get('EXPIRY_TIME'));
 
-		# generate CHeckSum
-		$dataWords =
-			$MALL_ID . //client->id 
-			$EMAIL . //customer->email
-			$NAME . //customer->name
-			$AMOUNT . //order->amount
-			$TRANSIDMERCHANT . // order->invoice_number
-			$EXPIRY_TIME . // virtual_account_info->expired_time
-			"" . // virtual_account_info ->info1
-			"" . // virtual_account_info ->info1
-			"" . // virtual_account_info ->info1
-			"false" . //virtual_account_info->reusable_status
-			htmlspecialchars_decode($SHARED_KEY); //shared key
+		$DATETIME = gmdate("Y-m-d H:i:s");
+		$DATETIME = date(DATE_ISO8601, strtotime($DATETIME));
+		$DATETIMEFINAL = substr($DATETIME, 0, 19) . "Z";
 
-		$WORDS = hash('sha256', $dataWords);
-		error_log('CHECKSUM VALUE ' . $dataWords);
-		error_log('CHECKSUM VALUE ' . $WORDS);
+		$REGID = $this->guidv4();
 
 		$SMARTY_ARRAY = 	array(
 			'this_path'        				=> $this->_path,
@@ -540,17 +550,16 @@ class JokulVa extends PaymentModule
 			'payment_name'     				=> Configuration::get('DOKU_NAME'),
 			'payment_description' 			=> Configuration::get('DOKU_DESCRIPTION'),
 			'URL'			   				=> $URL,
-			'MALLID'           				=> $MALL_ID,
-			'WORDS'							=> $WORDS,
-			'AMOUNT'           				=> $AMOUNT,
-			'PURCHASEAMOUNT'   				=> $AMOUNT,
-			'TRANSIDMERCHANT'  				=> $TRANSIDMERCHANT,
+			'amount'           				=> $amount,
+			'PURCHASEAMOUNT'           		=> $amount,
+			'EXPIRY_TIME'           		=> $EXPIRY_TIME,
+			'REGID'           				=> $REGID,
+			'DATETIME'           			=> $DATETIMEFINAL,
+			'invoice_number'  				=> $invoiceNumber,
 			'REQUESTDATETIME'  				=> $REQUEST_DATETIME,
 			'CURRENCY'         				=> $CURRENCY,
 			'PURCHASECURRENCY' 				=> $CURRENCY,
 			'PAYMENTCHANNEL'   				=> $PAYMENT_CHANNEL,
-			'NAME'             				=> $NAME,
-			'EMAIL'            				=> $EMAIL,
 			'HOMEPHONE'        				=> $PHONE,
 			'MOBILEPHONE'      				=> $PHONE,
 			'BASKET'           				=> $basket,
@@ -561,11 +570,15 @@ class JokulVa extends PaymentModule
 			'SHIPPING_ZIPCODE' 				=> $ZIPCODE,
 			'SHIPPING_CITY'    				=> $CITY,
 			'SHIPPING_ADDRESS' 				=> $ADDRESS,
+			'NAME' 						    => $NAME,
+			'EMAIL' 					    => $EMAIL,
 			'SHIPPING_COUNTRY' 				=> 'ID',
 			'URL_MERCHANTHOSTED'			=> $URL_MERCHANTHOSTED,
-			'EXPIRY_TIME'					=> $EXPIRY_TIME,
 			'PAYMENT_CHANNELS_MANDIRI'    		=> Tools::safeOutput(Configuration::get('PAYMENT_CHANNELS_MANDIRI')),
 			'PAYMENT_CHANNELS_MANDIRI_SYARIAH'  => Tools::safeOutput(Configuration::get('PAYMENT_CHANNELS_MANDIRI_SYARIAH')),
+			'PAYMENT_CHANNELS_DOKU_VA'  		=> Tools::safeOutput(Configuration::get('PAYMENT_CHANNELS_DOKU_VA')),
+			'PAYMENT_CHANNELS_PERMATA'  		=> Tools::safeOutput(Configuration::get('PAYMENT_CHANNELS_PERMATA')),
+			'PAYMENT_CHANNELS_BCA'  			=> Tools::safeOutput(Configuration::get('PAYMENT_CHANNELS_BCA')),
 			'PAYMENT_CHANNELS'					=> Tools::safeOutput(Configuration::get('PAYMENT_CHANNELS'))
 		);
 
@@ -574,8 +587,8 @@ class JokulVa extends PaymentModule
 		$trx['ip_address']          			= $IP_ADDRESS;
 		$trx['process_type']        			= $PROCESS_TYPE;
 		$trx['process_datetime']    			= $PROCESS_DATETIME;
-		$trx['invoice_number']     				= $TRANSIDMERCHANT;
-		$trx['amount']              			= $AMOUNT;
+		$trx['order_id']     				= $invoiceNumber;
+		$trx['amount']              			= $amount;
 		$trx['message']             			= "Transaction request start";
 		$trx['raw_post_data']					= http_build_query($SMARTY_ARRAY, '', '&');
 
@@ -688,9 +701,54 @@ class JokulVa extends PaymentModule
 
 		$db->Execute("SELECT * FROM " . $db_prefix . "jokulva" .
 			" WHERE " .
-			"process_type = '$process'" .
-			$check_result_msg .
-			" AND invoice_number = '" . $trx['invoice_number'] . "'" .
+			"invoice_number = '" . $trx['invoice_number'] . "'" .
+			" AND payment_code = '" . $trx['payment_code'] . "'" .
+			" AND amount = '" . $trx['amount'] . "'");
+
+		return $db->numRows();
+	}
+
+	function checkTrxNotify($trx, $process = 'REQUEST', $result_msg = '')
+	{
+		$db = Db::getInstance();
+
+		$db_prefix = _DB_PREFIX_;
+
+		if ($result_msg == "PENDING") return 0;
+
+		$check_result_msg = "";
+		if (!empty($result_msg)) {
+			$check_result_msg = " AND result_msg = '$result_msg'";
+		}
+
+		$db->Execute("SELECT * FROM " . $db_prefix . "jokulva" .
+			" WHERE " .
+			"invoice_number  = '" . $trx['invoice_number'] . "'" .
+			" AND payment_code = '" . $trx['payment_code'] . "'" .
+			" AND amount = '" . $trx['amount'] . "'");
+
+		return $db->numRows();
+	}
+
+	function checkStatusTrx($trx)
+	{
+		$result_msg = "";
+		$db = Db::getInstance();
+
+		$db_prefix = _DB_PREFIX_;
+
+		if ($result_msg == "PENDING") return 0;
+
+		$check_result_msg = "";
+		if (!empty($result_msg)) {
+			$check_result_msg = " AND result_msg = '$result_msg'";
+		}
+
+		$db->Execute("SELECT * FROM " . $db_prefix . "jokulva" .
+			" WHERE " .
+			"invoice_number = '" . $trx['invoice_number'] . "'" .
+			" AND payment_code = '" . $trx['payment_code'] . "'" .
+			" AND process_type = 'NOTIFY'" .
 			" AND amount = '" . $trx['amount'] . "'");
 
 		return $db->numRows();
@@ -727,6 +785,16 @@ class JokulVa extends PaymentModule
 
 		$db_prefix = _DB_PREFIX_;
 		$SQL       = "SELECT id_order FROM " . $db_prefix . "orders WHERE id_cart = $cart_id";
+
+		return $db->getValue($SQL);
+	}
+
+	function get_order_id_jokul($invoiceNumber , $paymentCode)
+	{
+		$db = Db::getInstance();
+
+		$db_prefix = _DB_PREFIX_;
+		$SQL       = "SELECT order_id FROM ".$db_prefix."jokulva where invoice_number ='".$invoiceNumber."' and payment_code='".$paymentCode."'";
 
 		return $db->getValue($SQL);
 	}
@@ -785,9 +853,12 @@ class JokulVa extends PaymentModule
 			'payment_channels'					=> Tools::safeOutput(Tools::getValue('PAYMENT_CHANNELS', Configuration::get('PAYMENT_CHANNELS'))),
 			'payment_channels_MANDIRI'			=> Tools::safeOutput(Tools::getValue('PAYMENT_CHANNELS_MANDIRI', Configuration::get('PAYMENT_CHANNELS_MANDIRI'))),
 			'payment_channels_MANDIRI_SYARIAH'	=> Tools::safeOutput(Tools::getValue('PAYMENT_CHANNELS_MANDIRI_SYARIAH', Configuration::get('PAYMENT_CHANNELS_MANDIRI_SYARIAH'))),
+			'payment_channels_DOKU_VA'			=> Tools::safeOutput(Tools::getValue('PAYMENT_CHANNELS_DOKU_VA', Configuration::get('PAYMENT_CHANNELS_DOKU_VA'))),
+			'payment_channels_PERMATA'			=> Tools::safeOutput(Tools::getValue('PAYMENT_CHANNELS_PERMATA', Configuration::get('PAYMENT_CHANNELS_PERMATA'))),
+			'payment_channels_BCA'				=> Tools::safeOutput(Tools::getValue('PAYMENT_CHANNELS_BCA', Configuration::get('PAYMENT_CHANNELS_BCA'))),
 			'expiry_time'						=> Tools::safeOutput(Tools::getValue('EXPIRY_TIME', Configuration::get('EXPIRY_TIME'))),
 			'server_dest'						=> Tools::safeOutput(Tools::getValue('SERVER_DEST', 	Configuration::get('SERVER_DEST'))),
-			'notification_url' 					=> _PS_BASE_URL_ . __PS_BASE_URI__ . 'modules/dokuonecheckout/request.php?task=notify'
+			'notification_url' 					=> _PS_BASE_URL_ . __PS_BASE_URI__ . 'modules/jokulva/request.php?task=notify'
 		);
 	}
 
@@ -803,5 +874,15 @@ class JokulVa extends PaymentModule
 		} else {
 			return Configuration::get('SHARED_KEY_PROD');
 		}
+	}
+
+	function guidv4($data = null)
+	{
+		$data = $data ?? random_bytes(16);
+
+		$data[6] = chr(ord($data[6]) & 0x0f | 0x40); // set version to 0100
+		$data[8] = chr(ord($data[8]) & 0x3f | 0x80); // set bits 6-7 to 10
+
+		return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
 	}
 }
