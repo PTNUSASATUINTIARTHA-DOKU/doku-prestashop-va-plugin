@@ -4,7 +4,7 @@
     Plugin Name : Prestashop DOKU Jokul VA Payment Gateway
     Plugin URI  : http://www.doku.com
     Description : DOKU Jokul VA Payment Gateway for Prestashop 1.7
-    Version     : 1.0.1
+    Version     : 1.1.1
     Author      : DOKU
     Author URI  : http://www.doku.com
 */
@@ -28,7 +28,7 @@ class JokulVa extends PaymentModule
 		$this->name             = 'jokulva';
 		$this->tab              = 'payments_gateways';
 		$this->author           = 'DOKU';
-		$this->version          = '1.0.1';
+		$this->version          = '1.1.1';
 		$this->need_instance 	= 0;
 		$this->ps_versions_compliancy = array('min' => '1.6', 'max' => _PS_VERSION_);
 		$this->bootstrap 		= true;
@@ -249,22 +249,22 @@ class JokulVa extends PaymentModule
 
 			[
 				'id_option' => 'BCA',
-				'name' 		=> 'BCA',
+				'name' 		=> 'BCA VA',
 			],
 			
 			[
 				'id_option' => 'MANDIRI',
-				'name' 		=> 'Bank Mandiri',
+				'name' 		=> 'Bank Mandiri VA',
 			],
 
 			[
 				'id_option' => 'MANDIRI_SYARIAH',
-				'name' 		=> 'Bank Syariah Indonesia',
+				'name' 		=> 'Bank Syariah Indonesia VA',
 			],
 
 			[
 				'id_option' => 'PERMATA',
-				'name' 		=> 'Bank Permata',
+				'name' 		=> 'Bank Permata VA',
 			],
 
 			[

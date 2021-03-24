@@ -76,19 +76,19 @@
 		<li style="list-style-type: none;">
 
 		{if $PAYMENT_CHANNELS_BCA}
-			<ul><input type="radio" name="PAYMENTCHANNEL" value="BCA" onclick="return channelVA('BCA')"> BCA</ul>
+			<ul><input type="radio" name="PAYMENTCHANNEL" value="BCA" onclick="return channelVA('BCA')"> BCA VA</ul>
 		{/if}
 
 		{if $PAYMENT_CHANNELS_MANDIRI}
-    	    <ul><input type="radio" name="PAYMENTCHANNEL" value="MANDIRI" onclick="return channelVA('MANDIRI')"> Bank Mandiri</ul>
+    	    <ul><input type="radio" name="PAYMENTCHANNEL" value="MANDIRI" onclick="return channelVA('MANDIRI')"> Bank Mandiri VA</ul>
     	{/if}						
 		
 		{if $PAYMENT_CHANNELS_MANDIRI_SYARIAH}
-			<ul><input type="radio" name="PAYMENTCHANNEL" value="MANDIRI_SYARIAH" onclick="return channelVA('MANDIRI_SYARIAH')"> Bank Syariah Indonesia</ul>
+			<ul><input type="radio" name="PAYMENTCHANNEL" value="MANDIRI_SYARIAH" onclick="return channelVA('MANDIRI_SYARIAH')"> Bank Syariah Indonesia VA</ul>
 		{/if}	
 
 		{if $PAYMENT_CHANNELS_PERMATA}
-			<ul><input type="radio" name="PAYMENTCHANNEL" value="PERMATA" onclick="return channelVA('PERMATA')"> Bank Permata</ul>
+			<ul><input type="radio" name="PAYMENTCHANNEL" value="PERMATA" onclick="return channelVA('PERMATA')"> Bank Permata VA</ul>
 		{/if}											
 
 		{if $PAYMENT_CHANNELS_DOKU_VA}
