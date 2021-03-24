@@ -73,23 +73,23 @@ class JokulVaRequestModuleFrontController extends ModuleFrontController
 
 						switch ($trx['payment_channel']) {
 							case "MANDIRI":
-								$payment_channel = "Mandiri VA";
+								$payment_channel = "Bank Mandiri VA";
 								break;
 
 							case "MANDIRI_SYARIAH":
-								$payment_channel = "Mandiri Syariah VA";
+								$payment_channel = "Bank Syariah Indonesia VA";
 								break;
 								
 							case "DOKU_VA":
-								$payment_channel = "DOKU VA";
+								$payment_channel = "Other Banks (VA by DOKU)";
 								break;
 
 							case "PERMATA":
-								$payment_channel = "Permata";
+								$payment_channel = "Bank Permata VA";
 								break;
 
 							case "BCA":
-								$payment_channel = "Bank Central Asia";
+								$payment_channel = "BCA VA";
 								break;
 
 							default:
