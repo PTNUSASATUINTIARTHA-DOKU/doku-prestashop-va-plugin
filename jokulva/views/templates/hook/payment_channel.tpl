@@ -20,7 +20,7 @@
 		const error_message = urlParams.get('error_message')
 
 		if(error_message!=null){
-			alert("Gagal Checkout : " + error_message + ", Hubungi Customer Services");
+			alert("Failed to Checkout: " + error_message + ", Please contact our support team");
 		}
 
 		
@@ -74,25 +74,25 @@
 		</table>
 		
 		<li style="list-style-type: none;">
-		
+
+		{if $PAYMENT_CHANNELS_BCA}
+			<ul><input type="radio" name="PAYMENTCHANNEL" value="BCA" onclick="return channelVA('BCA')"> BCA</ul>
+		{/if}
+
 		{if $PAYMENT_CHANNELS_MANDIRI}
-    	    <ul><input type="radio" name="PAYMENTCHANNEL" value="MANDIRI" onclick="return channelVA('MANDIRI')"> Mandiri</ul>
+    	    <ul><input type="radio" name="PAYMENTCHANNEL" value="MANDIRI" onclick="return channelVA('MANDIRI')"> Bank Mandiri</ul>
     	{/if}						
 		
 		{if $PAYMENT_CHANNELS_MANDIRI_SYARIAH}
-			<ul><input type="radio" name="PAYMENTCHANNEL" value="MANDIRI_SYARIAH" onclick="return channelVA('MANDIRI_SYARIAH')"> Mandiri Syariah</ul>
-		{/if}												
-
-		{if $PAYMENT_CHANNELS_DOKU_VA}
-			<ul><input type="radio" name="PAYMENTCHANNEL" value="DOKU_VA" onclick="return channelVA('DOKU_VA')"> DOKU VA</ul>
-		{/if}
-
-		{if $PAYMENT_CHANNELS_BCA}
-			<ul><input type="radio" name="PAYMENTCHANNEL" value="BCA" onclick="return channelVA('BCA')"> Bank Central Asia</ul>
-		{/if}
+			<ul><input type="radio" name="PAYMENTCHANNEL" value="MANDIRI_SYARIAH" onclick="return channelVA('MANDIRI_SYARIAH')"> Bank Syariah Indonesia</ul>
+		{/if}	
 
 		{if $PAYMENT_CHANNELS_PERMATA}
-			<ul><input type="radio" name="PAYMENTCHANNEL" value="PERMATA" onclick="return channelVA('PERMATA')"> Permata</ul>
+			<ul><input type="radio" name="PAYMENTCHANNEL" value="PERMATA" onclick="return channelVA('PERMATA')"> Bank Permata</ul>
+		{/if}											
+
+		{if $PAYMENT_CHANNELS_DOKU_VA}
+			<ul><input type="radio" name="PAYMENTCHANNEL" value="DOKU_VA" onclick="return channelVA('DOKU_VA')"> Other Banks (VA by DOKU)</ul>
 		{/if}
 
 		</li>

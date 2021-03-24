@@ -4,7 +4,7 @@
     Plugin Name : Prestashop DOKU Jokul VA Payment Gateway
     Plugin URI  : http://www.doku.com
     Description : DOKU Jokul VA Payment Gateway for Prestashop 1.7
-    Version     : 1.0.0
+    Version     : 1.1.1
     Author      : DOKU
     Author URI  : http://www.doku.com
 */
@@ -28,7 +28,7 @@ class JokulVa extends PaymentModule
 		$this->name             = 'jokulva';
 		$this->tab              = 'payments_gateways';
 		$this->author           = 'DOKU';
-		$this->version          = '1.0.0';
+		$this->version          = '1.1.1';
 		$this->need_instance 	= 0;
 		$this->ps_versions_compliancy = array('min' => '1.6', 'max' => _PS_VERSION_);
 		$this->bootstrap 		= true;
@@ -41,7 +41,7 @@ class JokulVa extends PaymentModule
 
 		parent::__construct();
 		$this->displayName      = $this->l('Jokul - Virtual Account');
-		$this->description      = $this->l('DOKU is Indonesia\'s largest and fastest growing provider of electronic payment. We provide electronic payment processing, online and in mobile applications. Enabling e-Commerce merchants of any size to accept a wide range of online payment options, from credit cards to emerging payment types.');
+		$this->description      = $this->l('Accept payments through virtual account with Jokul. Make it easy for your customers to purchase on your store.');
 		$this->confirmUninstall = $this->l('Are you sure you want to uninstall?');
 
 		$this->va_channel       = array("MANDIRI", "MANDIRI_SYARIAH", "DOKU_VA", "BCA", "PERMATA");
@@ -188,14 +188,14 @@ class JokulVa extends PaymentModule
 		if (Tools::isSubmit('btnSubmit')) {
 			if (intval(Tools::getValue('server_dest')) == 0) {
 				if (!Tools::getValue('mall_id_dev'))
-					$this->_postErrors[] = $this->l('Mall ID is required.');
+					$this->_postErrors[] = $this->l('Client ID is required.');
 				elseif (!Tools::getValue('shared_key_dev'))
-					$this->_postErrors[] = $this->l('Sharedkey is required.');
+					$this->_postErrors[] = $this->l('Secret Key is required.');
 			} else {
 				if (!Tools::getValue('mall_id_prod'))
-					$this->_postErrors[] = $this->l('Mall ID is required.');
+					$this->_postErrors[] = $this->l('Client ID is required.');
 				elseif (!Tools::getValue('shared_key_prod'))
-					$this->_postErrors[] = $this->l('Sharedkey is required.');
+					$this->_postErrors[] = $this->l('Secret Key is required.');
 			}
 		}
 	}
@@ -246,29 +246,30 @@ class JokulVa extends PaymentModule
 	{
 		$payment_channels = [
 
+
+			[
+				'id_option' => 'BCA',
+				'name' 		=> 'BCA',
+			],
+			
 			[
 				'id_option' => 'MANDIRI',
-				'name' 		=> 'Mandiri',
+				'name' 		=> 'Bank Mandiri',
 			],
 
 			[
 				'id_option' => 'MANDIRI_SYARIAH',
-				'name' 		=> 'Mandiri Syariah',
-			],
-
-			[
-				'id_option' => 'DOKU_VA',
-				'name' 		=> 'DOKU VA',
-			],
-
-			[
-				'id_option' => 'BCA',
-				'name' 		=> 'Bank Central Asia',
+				'name' 		=> 'Bank Syariah Indonesia',
 			],
 
 			[
 				'id_option' => 'PERMATA',
 				'name' 		=> 'Bank Permata',
+			],
+
+			[
+				'id_option' => 'DOKU_VA',
+				'name' 		=> 'Other Banks (VA by DOKU)',
 			]
 
 		];
@@ -339,10 +340,10 @@ class JokulVa extends PaymentModule
 
 					[
 						'type'  => 'text',
-						'label' => '<span style="color:red"><b>*</b></span> ' . $this->l('Sandbox Shared Key'),
+						'label' => '<span style="color:red"><b>*</b></span> ' . $this->l('Sandbox Secret Key'),
 						'name'  => 'shared_key_dev',
 						'hint'  => [
-							$this->l('Shared Key.')
+							$this->l('Sandbox Secret Key.')
 						],
 					],
 
@@ -357,21 +358,21 @@ class JokulVa extends PaymentModule
 
 					[
 						'type'  => 'text',
-						'label' => '<span style="color:red"><b>*</b></span> ' . $this->l('Production Shared Key'),
+						'label' => '<span style="color:red"><b>*</b></span> ' . $this->l('Production Secret Key'),
 						'name'  => 'shared_key_prod',
 						'hint'  => [
-							$this->l('Shared Key.')
+							$this->l('Production Secret Key.')
 						],
 					],
 
 					[
 						'type' 		=> 'checkbox',
-						'label' 	=> $this->l('Payment Types'),
+						'label' 	=> $this->l('Payment Channels'),
 						'name' 		=> 'payment_channels',
 						'multiple' 	=> true,
 
 						'hint' 		=> [
-							$this->l('Choose the payment types you can offer to the customers. The Payment types will be presented to the customer to pre-select on the checkout page.')
+							$this->l('Choose the payment channels that you can offer to the customers. The payment channels will be presented to the customer on the checkout page.')
 						],
 
 						'values' 	=> [
