@@ -33,7 +33,7 @@ $data = array(
     "additional_info" => array(
         "integration" => array(
             "name" => "prestashop-plugin",
-            "version" => "1.1.1"
+            "version" => "1.0.1"
         )
     )
 );
