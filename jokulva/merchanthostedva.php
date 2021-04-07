@@ -33,7 +33,7 @@ $data = array(
     "additional_info" => array(
         "integration" => array(
             "name" => "prestashop-plugin",
-            "version" => "1.1.0"
+            "version" => "1.1.1"
         )
     )
 );
@@ -113,56 +113,26 @@ if ($httpcode == 200) {
 
     <head>
         <meta charset="UTF-8">
-        <title>DOKU Payment Page - Redirect</title>
-        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-        <meta name="apple-mobile-web-app-capable" content="yes">
-        <meta name="apple-mobile-web-app-status-bar-style" content="black">
-        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
-        <script type="text/javascript" src="https://pay.doku.com/merchant_data/ocov2/js/doku.analytics.js"></script>
-
-        <link rel="stylesheet" type="text/css" href="https://pay.doku.com/merchant_data/ocov2/css/default.min.css" />
-        <link rel="stylesheet" type="text/css" href="https://pay.doku.com/merchant_data/ocov2/css/style.min.css" />
-
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Loading...</title>
+        <link rel="stylesheet" href="https://cdn-doku.oss-ap-southeast-5.aliyuncs.com/doku-ui-framework/css-doku%401.0.0/css/main.css">
+        <link rel="stylesheet" href="https://cdn-doku.oss-ap-southeast-5.aliyuncs.com/doku-ui-framework/css-jokul/1.0.0/main.css">
     </head>
 
-    <body class="tempdefault tempcolor tempone" onload="document.formRedirect.submit()">
-        <section class="default-width">
-            <div class="head padd-default">
-                <div class="left-head fleft">
-                </div>
-
-                <div class="clear"></div>
-            </div>
-            <br />
-            <div class="">
-                <div class="loading">
-                    <div class="spinner">
-                        <div class="double-bounce1"></div>
-                        <div class="double-bounce2"></div>
-                    </div>
-                    <div class="color-one">
-                        Please wait.<br />
-                        Your request is being processed...<br />
-                        <br />
-                        <span id="TEXT-CONTINUE">Click button below if the page is not change</span>
-                    </div>
-                </div>
-
-                <form action="<?php echo $myservername; ?>index.php?fc=module&module=jokulva&controller=request&task=redirect" method="POST" id="formRedirect" name="formRedirect">
-                    <input type="hidden" name="DATABODY" value="<?php echo $bodyJson; ?>">
-                    <input type="hidden" name="AMOUNT" value="<?php echo $amount; ?>">
-                    <input type="hidden" name="TRANSIDMERCHANT" value="<?php echo $invoiceNumber; ?>">
-                    <input type="hidden" name="STATUSCODE" value="<?php echo $STATUSCODE; ?>">
-                    <input type="hidden" name="PAYMENTCODE" value="<?php echo $PAYMENTCODE; ?>">
-                    <input type="hidden" name="PAYMENTEXP" value="<?php echo $PAYMENTEXP; ?>">
-                    <input type="hidden" name="PAYMENTHOW" value="<?php echo $PAYMENTHOW; ?>">
-                    <input type="hidden" name="PAYMENTCHANNEL" value="<?php echo $paymentChannel; ?>">
-                </form>
-            </div>
-        </section>
-        <div class="footer">
-            <div id="copyright" class="">Copyright DOKU 2020</div>
+    <body onload="document.formRedirect.submit()">
+        <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
+            <div class="spinner-border text-light spinner-lg" role="status"></div>
+            <form action="<?php echo $myservername; ?>index.php?fc=module&module=jokulva&controller=request&task=redirect" method="POST" id="formRedirect" name="formRedirect">
+                <input type="hidden" name="DATABODY" value="<?php echo $bodyJson; ?>">
+                <input type="hidden" name="AMOUNT" value="<?php echo $amount; ?>">
+                <input type="hidden" name="TRANSIDMERCHANT" value="<?php echo $invoiceNumber; ?>">
+                <input type="hidden" name="STATUSCODE" value="<?php echo $STATUSCODE; ?>">
+                <input type="hidden" name="PAYMENTCODE" value="<?php echo $PAYMENTCODE; ?>">
+                <input type="hidden" name="PAYMENTEXP" value="<?php echo $PAYMENTEXP; ?>">
+                <input type="hidden" name="PAYMENTHOW" value="<?php echo $PAYMENTHOW; ?>">
+                <input type="hidden" name="PAYMENTCHANNEL" value="<?php echo $paymentChannel; ?>">
+            </form>
         </div>
     </body>
 
@@ -176,50 +146,17 @@ if ($httpcode == 200) {
 
     <head>
         <meta charset="UTF-8">
-        <title>DOKU Payment Page - Redirect</title>
-        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-        <meta name="apple-mobile-web-app-capable" content="yes">
-        <meta name="apple-mobile-web-app-status-bar-style" content="black">
-        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
-        <script type="text/javascript" src="https://pay.doku.com/merchant_data/ocov2/js/doku.analytics.js"></script>
-
-        <link rel="stylesheet" type="text/css" href="https://pay.doku.com/merchant_data/ocov2/css/default.min.css" />
-        <link rel="stylesheet" type="text/css" href="https://pay.doku.com/merchant_data/ocov2/css/style.min.css" />
-
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Loading...</title>
+        <link rel="stylesheet" href="https://cdn-doku.oss-ap-southeast-5.aliyuncs.com/doku-ui-framework/css-doku%401.0.0/css/main.css">
+        <link rel="stylesheet" href="https://cdn-doku.oss-ap-southeast-5.aliyuncs.com/doku-ui-framework/css-jokul/1.0.0/main.css">
     </head>
 
-    <body class="tempdefault tempcolor tempone" onload="document.formRedirect.submit()">
-        <section class="default-width">
-            <div class="head padd-default">
-                <div class="left-head fleft">
-                </div>
-
-                <div class="clear"></div>
-            </div>
-            <br />
-            <div class="">
-                <div class="loading">
-                    <div class="spinner">
-                        <div class="double-bounce1"></div>
-                        <div class="double-bounce2"></div>
-                    </div>
-                    <div class="color-one">
-                        Please wait.<br />
-                        Your request is being processed...<br />
-                        <br />
-                        <span id="TEXT-CONTINUE">Click button below if the page is not change</span>
-                    </div>
-                </div>
-
-                <form action="<?php echo $myservername; ?>index.php?fc=module&module=jokulva&controller=request&task=redirectFailed" method="POST" id="formRedirect" name="formRedirect">
-
-                </form>
-
-            </div>
-        </section>
-        <div class="footer">
-            <div id="copyright" class="">Copyright DOKU 2020</div>
+    <body onload="document.formRedirect.submit()">
+        <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
+            <div class="spinner-border text-light spinner-lg" role="status"></div>
+            <form action="<?php echo $myservername; ?>index.php?fc=module&module=jokulva&controller=request&task=redirectFailed" method="POST" id="formRedirect" name="formRedirect">
         </div>
     </body>
 

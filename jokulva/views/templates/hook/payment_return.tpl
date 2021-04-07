@@ -16,6 +16,6 @@
     </p>
 
     <p>
-        <a href={$payment_how}>Click here to see payment instructions</a>
+        <a href={$payment_how} target="_blank">Click here to see payment instructions</a>
     </p>
 </div>
