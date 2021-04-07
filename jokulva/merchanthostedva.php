@@ -96,7 +96,7 @@ curl_setopt($ch, CURLOPT_HTTPHEADER, array(
 $GETDATARESULT = curl_exec($ch);
 $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 $error_msg = curl_error($ch);
-$myservername = _PS_BASE_URL_ . __PS_BASE_URI__;
+$myservername = Tools::getHttpHost(true) . __PS_BASE_URI__;
 $GETDATARESULT = json_decode($GETDATARESULT);
 
 if ($httpcode == 200) {
