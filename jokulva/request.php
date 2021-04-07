@@ -104,7 +104,7 @@ function generateSignature($headers, $secret)
 	$rawSignature = "Client-Id:" . $headers['Client-Id'] . "\n"
 		. "Request-Id:" . $headers['Request-Id'] . "\n"
 		. "Request-Timestamp:" . $headers['Request-Timestamp'] . "\n"
-		. "Request-Target:" . "/modules/jokulva/request.php?task=notify" . "\n"
+		. "Request-Target:" . "/modules/jokulva/request.php" . "\n"
 		. "Digest:" . $digest;
 
 	$signature = base64_encode(hash_hmac('sha256', $rawSignature, $secret, true));
