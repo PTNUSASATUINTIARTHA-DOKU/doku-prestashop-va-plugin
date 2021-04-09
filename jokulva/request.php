@@ -60,7 +60,7 @@ switch ($task) {
 					$jokulva->emptybag();
 
 					$jokulva->set_order_status($order_id, $status_no);
-					
+
 					$checkStatusTrx = $jokulva->checkStatusTrx($trx);
 					if ($checkStatusTrx < 1) {
 						$jokulva->add_jokulva($trx);
@@ -79,32 +79,13 @@ switch ($task) {
 		break;
 }
 
-function returnResponse($json_data_input)
-{
-	header("Access-Control-Allow-Origin: *");
-	header("Content-Type: application/json; charset=UTF-8");
-
-	$json_data_output = array(
-		"order" => array(
-			"invoice_number" => $json_data_input['order']['invoice_number'],
-			"amount" => $json_data_input['order']['amount']
-		),
-		"virtual_account_info" => array(
-			"virtual_account_number" => $json_data_input['virtual_account_info']['virtual_account_number']
-		)
-	);
-
-	echo json_encode($json_data_output);
-	die;
-}
-
 function generateSignature($headers, $secret)
 {
 	$digest = base64_encode(hash('sha256', file_get_contents('php://input'), true));
 	$rawSignature = "Client-Id:" . $headers['Client-Id'] . "\n"
 		. "Request-Id:" . $headers['Request-Id'] . "\n"
 		. "Request-Timestamp:" . $headers['Request-Timestamp'] . "\n"
-		. "Request-Target:" . "/modules/jokulva/request.php" . "\n"
+		. "Request-Target:" . parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH) . "\n"
 		. "Digest:" . $digest;
 
 	$signature = base64_encode(hash_hmac('sha256', $rawSignature, $secret, true));

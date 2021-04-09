@@ -102,6 +102,7 @@
 		<input type=hidden name="REGID"  		   value="{$REGID}">
 		<input type=hidden name="DATETIME"  	   value="{$DATETIME}">
     	<input type=hidden name="invoice_number"   value="{$invoice_number}">
+		<input type=hidden name="order_id"   	   value="{$order_id}">
     	<input type=hidden name="amount"           value="{$amount}">
     	<input type=hidden name="REQUESTDATETIME"  value="{$REQUESTDATETIME}">
     	<input type=hidden name="CURRENCY"         value="{$CURRENCY}">

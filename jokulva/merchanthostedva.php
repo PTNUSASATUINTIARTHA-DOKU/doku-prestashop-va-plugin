@@ -12,6 +12,7 @@ if (!$_POST) {
 
 $invoiceNumber = $_POST['invoice_number'];
 $amount = $_POST['amount'];
+$orderId = $_POST['order_id'];
 
 # generate CheckSum
 $data = array(
@@ -127,6 +128,7 @@ if ($httpcode == 200) {
                 <input type="hidden" name="DATABODY" value="<?php echo $bodyJson; ?>">
                 <input type="hidden" name="AMOUNT" value="<?php echo $amount; ?>">
                 <input type="hidden" name="TRANSIDMERCHANT" value="<?php echo $invoiceNumber; ?>">
+                <input type="hidden" name="ORDERID" value="<?php echo $orderId; ?>">
                 <input type="hidden" name="STATUSCODE" value="<?php echo $STATUSCODE; ?>">
                 <input type="hidden" name="PAYMENTCODE" value="<?php echo $PAYMENTCODE; ?>">
                 <input type="hidden" name="PAYMENTEXP" value="<?php echo $PAYMENTEXP; ?>">

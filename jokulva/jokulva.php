@@ -50,14 +50,14 @@ class JokulVa extends PaymentModule
 	public function install()
 	{
 		parent::install();
-		$this->createjokulvaTable();
 		$this->registerHook('paymentOptions');
 		$this->registerHook('displayPaymentReturn');
 		$this->registerHook('paymentReturn');
 		$this->registerHook('updateOrderStatus');
 		$this->addDOKUOrderStatus();
 		$this->copyEmailFiles();
-		Configuration::updateGlobalValue('DOKU_NAME', "Virtual Account");	
+		$this->createjokulvaTable();
+		Configuration::updateGlobalValue('DOKU_NAME', "Virtual Account");
 		Configuration::updateGlobalValue('DOKU_DESCRIPTION', "Please select payment channel");
 		return true;
 	}
@@ -251,7 +251,7 @@ class JokulVa extends PaymentModule
 				'id_option' => 'BCA',
 				'name' 		=> 'BCA VA',
 			],
-			
+
 			[
 				'id_option' => 'MANDIRI',
 				'name' 		=> 'Bank Mandiri VA',
@@ -523,7 +523,8 @@ class JokulVa extends PaymentModule
 
 		# Set Redirect Parameter
 		$CURRENCY            			= 360;
-		$invoiceNumber  	   			= intval($cart->id);
+		$invoiceNumber  	   			= strtoupper(Tools::passwdGen(9, 'NO_NUMERIC'));
+		$orderid                        = intval($cart->id);
 		$NAME                			= Tools::safeOutput($address->firstname . ' ' . $address->lastname);
 		$EMAIL               			= $customer->email;
 		$ADDRESS             			= Tools::safeOutput($address->address1 . ' ' . $address->address2);
@@ -557,6 +558,7 @@ class JokulVa extends PaymentModule
 			'REGID'           				=> $REGID,
 			'DATETIME'           			=> $DATETIMEFINAL,
 			'invoice_number'  				=> $invoiceNumber,
+			'order_id'  				    => $orderid,
 			'REQUESTDATETIME'  				=> $REQUEST_DATETIME,
 			'CURRENCY'         				=> $CURRENCY,
 			'PURCHASECURRENCY' 				=> $CURRENCY,
@@ -612,6 +614,13 @@ class JokulVa extends PaymentModule
 			$this->addOrderStatus(
 				'DOKU_AWAITING_PAYMENT',
 				'Virtual Account Awaiting for Payment',
+				$stateConfig,
+				true,
+				'doku_payment_code'
+			);
+			$this->addOrderStatus(
+				'DOKU_INITIALIZE_PAYMENT',
+				'Virtual Account Payment Initialization',
 				$stateConfig,
 				false,
 				''
@@ -790,12 +799,12 @@ class JokulVa extends PaymentModule
 		return $db->getValue($SQL);
 	}
 
-	function get_order_id_jokul($invoiceNumber , $paymentCode)
+	function get_order_id_jokul($invoiceNumber, $paymentCode)
 	{
 		$db = Db::getInstance();
 
 		$db_prefix = _DB_PREFIX_;
-		$SQL       = "SELECT order_id FROM ".$db_prefix."jokulva where invoice_number ='".$invoiceNumber."' and payment_code='".$paymentCode."'";
+		$SQL       = "SELECT order_id FROM " . $db_prefix . "jokulva where invoice_number ='" . $invoiceNumber . "' and payment_code='" . $paymentCode . "'";
 
 		return $db->getValue($SQL);
 	}
@@ -826,6 +835,7 @@ class JokulVa extends PaymentModule
 
 		$USE_IDENTIFY = Tools::safeOutput(Configuration::get('USE_IDENTIFY'));
 
+		$DOKU_INITIALIZE_PAYMENT = Tools::safeOutput(Configuration::get('DOKU_INITIALIZE_PAYMENT'));
 		$DOKU_AWAITING_PAYMENT = Tools::safeOutput(Configuration::get('DOKU_AWAITING_PAYMENT'));
 		$DOKU_PAYMENT_RECEIVED = Tools::safeOutput(Configuration::get('DOKU_PAYMENT_RECEIVED'));
 
@@ -834,6 +844,7 @@ class JokulVa extends PaymentModule
 			"SHARED_KEY" => $SHARED_KEY,
 			"USE_IDENTIFY" => $USE_IDENTIFY,
 			"URL_CHECK" => $URL_CHECK,
+			"DOKU_INITIALIZE_PAYMENT" => $DOKU_INITIALIZE_PAYMENT,
 			"DOKU_AWAITING_PAYMENT" => $DOKU_AWAITING_PAYMENT,
 			"DOKU_PAYMENT_RECEIVED" => $DOKU_PAYMENT_RECEIVED
 		);
