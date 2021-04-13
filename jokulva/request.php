@@ -23,14 +23,11 @@ switch ($task) {
 
 			$config = $jokulva->getServerConfig();
 
-			$orderIdDb = $jokulva->get_order_id_jokul($trx['invoice_number'], $json_data_input['virtual_account_info']['virtual_account_number']);
-
-			$order_id = $jokulva->get_order_id($orderIdDb);
+			$order_id = $jokulva->get_order_id_jokul($trx['invoice_number'], $json_data_input['virtual_account_info']['virtual_account_number']);
 
 			if (!$order_id) {
 				$order_state = $config['DOKU_AWAITING_PAYMENT'];
 				$trx['amount'] = $json_data_input["order"]["amount"];
-				$order_id = $jokulva->get_order_id($trx['invoice_number']);
 			}
 
 			$order = new Order($order_id);
@@ -42,7 +39,7 @@ switch ($task) {
 				$trx['ip_address']            = $jokulva->getipaddress();
 				$trx['amount']                = $json_data_input['order']['amount'];
 				$trx['invoice_number']        = $json_data_input['order']['invoice_number'];
-				$trx['order_id']       		  = $orderIdDb;
+				$trx['order_id']       		  = $order_id;
 				$trx['payment_channel']       = $json_data_input['channel']['id'];
 				$trx['payment_code']          = $json_data_input['virtual_account_info']['virtual_account_number'];
 				$trx['doku_payment_datetime'] = $json_data_input['virtual_account_payment']['date'];
@@ -53,7 +50,6 @@ switch ($task) {
 				if ($result < 1) {
 					http_response_code(404);
 				} else {
-					$order_id = $jokulva->get_order_id($orderIdDb);
 					$trx['message'] = "Notify process message come from DOKU. Success : completed";
 					$status         = "completed";
 					$status_no      = $config['DOKU_PAYMENT_RECEIVED'];
