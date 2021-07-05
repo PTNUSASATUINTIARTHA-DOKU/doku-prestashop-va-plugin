@@ -97,7 +97,7 @@
 
 		</li>
 		
-		<input type="submit" class="btn btn-primary" value="ORDER WITH AN OBLIGATION TO PAY" onclick="return checkChannel();">
+		<input type="submit" class="btn btn-primary" value="PAY" onclick="return checkChannel();">
 		
 		<input type=hidden name="REGID"  		   value="{$REGID}">
 		<input type=hidden name="DATETIME"  	   value="{$DATETIME}">

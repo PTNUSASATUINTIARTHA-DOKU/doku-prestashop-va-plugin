@@ -21,8 +21,8 @@ switch ($task) {
 			$trx['result_msg']                = null;
 			$trx['process_type']             = 'NOTIFY';
 
+			$jokulva->doku_log($jokulva, " VIRTUAL ACCOUNT NOTIF RAW POST DATA ".json_encode($json_data_input), $json_data_input['order']['invoice_number'], '../../');
 			$config = $jokulva->getServerConfig();
-
 			$order_id = $jokulva->get_order_id_jokul($trx['invoice_number'], $json_data_input['virtual_account_info']['virtual_account_number']);
 
 			if (!$order_id) {
@@ -35,6 +35,7 @@ switch ($task) {
 			$headers = getallheaders();
 			$signature = generateSignature($headers, $jokulva->getKey());
 			if ($headers['Signature'] == $signature) {
+				$jokulva->doku_log($jokulva, " VIRTUAL ACCOUNT NOTIF SIGNATURE SUCCESS ".$signature, $json_data_input['order']['invoice_number'], '../../');
 				$trx['raw_post_data']         = file_get_contents('php://input');
 				$trx['ip_address']            = $jokulva->getipaddress();
 				$trx['amount']                = $json_data_input['order']['amount'];
@@ -50,19 +51,27 @@ switch ($task) {
 				if ($result < 1) {
 					http_response_code(404);
 				} else {
-					$trx['message'] = "Notify process message come from DOKU. Success : completed";
-					$status         = "completed";
-					$status_no      = $config['DOKU_PAYMENT_RECEIVED'];
-					$jokulva->emptybag();
+					if (strtolower($json_data_input['transaction']['status']) == strtolower('SUCCESS')) {
+						$trx['message'] = "Notify process message come from DOKU. Success : completed";
+						$status         = "completed";
+						$status_no      = $config['DOKU_PAYMENT_RECEIVED'];
+						$jokulva->emptybag();
+						$jokulva->set_order_status($order_id, $status_no);
 
-					$jokulva->set_order_status($order_id, $status_no);
-
-					$checkStatusTrx = $jokulva->checkStatusTrx($trx);
-					if ($checkStatusTrx < 1) {
-						$jokulva->add_jokulva($trx);
+						$checkStatusTrx = $jokulva->checkStatusTrx($trx);
+						if ($checkStatusTrx < 1) {
+							$jokulva->add_jokulva($trx);
+						}
+					} else {
+						$trx['message'] = "Notify process message come from DOKU. Success : Failed";
+						$status         = "failed";
+						$status_no      = $config['DOKU_AWAITING_PAYMENT'];
+						$jokulva->emptybag();
+						$jokulva->set_order_status($order_id, $status_no);
 					}
 				}
 			} else {
+				$jokulva->doku_log($jokulva, " VIRTUAL ACCOUNT NOTIF SIGNATURE FAILED ".$signature, $json_data_input['order']['invoice_number'], '../../');
 				http_response_code(400);
 			}
 		}

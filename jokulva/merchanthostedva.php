@@ -14,7 +14,6 @@ $invoiceNumber = $_POST['invoice_number'];
 $amount = $_POST['amount'];
 $orderId = $_POST['order_id'];
 
-# generate CheckSum
 $data = array(
     "order" => array(
         "invoice_number" => $invoiceNumber,
@@ -38,6 +37,8 @@ $data = array(
         )
     )
 );
+
+$jokulva->doku_log($jokulva, " VIRTUAL ACCOUNT REQUEST ".json_encode($data), $invoiceNumber, '../../');
 
 $config = $jokulva->getServerConfig();
 $bodyJson = json_encode($data);
@@ -75,6 +76,7 @@ $configarray = parse_ini_file($_POST['CUSTOMERID']);
 $URL = $configarray[$paymentChannel];
 
 define('POSTURL', $URL);
+$jokulva->doku_log($jokulva, " VIRTUAL ACCOUNT URL ".$URL, $invoiceNumber, '../../');
 
 $ch = curl_init(POSTURL);
 curl_setopt($ch, CURLOPT_POST, 1);
@@ -98,14 +100,15 @@ $GETDATARESULT = curl_exec($ch);
 $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 $error_msg = curl_error($ch);
 $myservername = Tools::getHttpHost(true) . __PS_BASE_URI__;
+$jokulva->doku_log($jokulva, " VIRTUAL ACCOUNT RESPONSE ".$GETDATARESULT, $invoiceNumber, '../../');
 $GETDATARESULT = json_decode($GETDATARESULT);
 
 if ($httpcode == 200) {
     $PAYMENTCODE = $GETDATARESULT->virtual_account_info->virtual_account_number;
     $PAYMENTEXP = $GETDATARESULT->virtual_account_info->expired_date;
     $PAYMENTHOW = $GETDATARESULT->virtual_account_info->how_to_pay_page;
+    $JOKULVA_PAYMENTHOWAPI = $GETDATARESULT->virtual_account_info->how_to_pay_api;
     $STATUSCODE = '';
-
     curl_close($ch);
 ?>
 
@@ -133,6 +136,7 @@ if ($httpcode == 200) {
                 <input type="hidden" name="PAYMENTCODE" value="<?php echo $PAYMENTCODE; ?>">
                 <input type="hidden" name="PAYMENTEXP" value="<?php echo $PAYMENTEXP; ?>">
                 <input type="hidden" name="PAYMENTHOW" value="<?php echo $PAYMENTHOW; ?>">
+                <input type="hidden" name="JOKULVA_PAYMENTHOWAPI" value="<?php echo $JOKULVA_PAYMENTHOWAPI; ?>">
                 <input type="hidden" name="PAYMENTCHANNEL" value="<?php echo $paymentChannel; ?>">
             </form>
         </div>

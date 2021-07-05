@@ -109,7 +109,7 @@ class JokulVaRequestModuleFrontController extends ModuleFrontController
 				));
 
 				# Update order status
-				$howToPay = $this->fetchEmailTemplate($payment_channel, $trx);
+				$howToPay = $this->fetchEmailTemplate($_POST['JOKULVA_PAYMENTHOWAPI']);
 				$email_data = array(
 					'{payment_channel}' => $payment_channel,
 					'{amount}' => $trx['amount'],
@@ -172,34 +172,40 @@ class JokulVaRequestModuleFrontController extends ModuleFrontController
 		}
 	}
 
-	private function fetchEmailTemplate($paymentChannel, $trx)
+	private function fetchEmailTemplate($url)
 	{
-		switch ($paymentChannel) {
-			case "MANDIRI":
-				return "1.&nbsp;&emsp;Masukkan kartu ATM Mandiri, lalu masukkan PIN ATM<br>
-                    	2.&nbsp;&emsp;Pilih menu Bayar/Beli<br>
-                    	3.&nbsp;&emsp;Pilih “Lainnya” dan pilih “Lainnya” kembali<br>
-                        4.&nbsp;&emsp;Pilih “Ecommerce”<br>
-                        5.&nbsp;&emsp;Masukkan 5 digit awal dari nomor Mandiri VA (Virtual Account) yang didapat (" . substr($trx['payment_code'], 0, 5) . ")<br>
-                        6.&nbsp;&emsp;Masukkan keseluruhan nomor VA " . $trx['payment_code'] . "<br>
-                        7.&nbsp;&emsp;Masukkan jumlah pembayaran<br>
-                        8.&nbsp;&emsp;Nomor VA, Nama, dan jumlah pembayaran akan ditampilkan di layar<br>
-                        9.&nbsp;&emsp;Tekan angka 1 dan pilih “YA”<br>
-                        10.&emsp;Konfirmasi pembayaran dan pilih “YA<br>
-                        11.&emsp;Transaksi selesai. Mohon simpan bukti transaksi";
+		$response = $this->getEmailData($url);
+		$paymentInstruction = $response->payment_instruction;
+		$outputStep = '';
+		foreach ($paymentInstruction as $value) {
 
-			default:
-				return "1.&nbsp;&emsp;Masukkan kartu ATM Mandiri, lalu masukkan PIN ATM<br>
-                                2.&nbsp;&emsp;Pilih menu Bayar/Beli<br>
-                                3.&nbsp;&emsp;Pilih “Lainnya” dan pilih “Lainnya” kembali<br>
-                                4.&nbsp;&emsp;Pilih “Ecommerce”<br>
-                            	5.&nbsp;&emsp;Masukkan 5 digit awal dari nomor Mandiri VA (Virtual Account) yang didapat (" . substr($trx['payment_code'], 0, 5) . ")<br>
-                            	6.&nbsp;&emsp;Masukkan keseluruhan nomor VA " . $trx['payment_code'] . "<br>
-                                7.&nbsp;&emsp;Masukkan jumlah pembayaran<br>
-                                8.&nbsp;&emsp;Nomor VA, Nama, dan jumlah pembayaran akan ditampilkan di layar<br>
-                                9.&nbsp;&emsp;Tekan angka 1 dan pilih “YA”<br>
-                                10.&emsp;Konfirmasi pembayaran dan pilih “YA<br>
-                                11.&emsp;Transaksi selesai. Mohon simpan bukti transaksi";
+			$stepIndex = 1;
+			$outputStep .= $value->channel . "<br>" . "<br>";
+			foreach ($value->step as $step) {
+
+				$outputStep .= $stepIndex . ". " . $step . "<br>";
+				$stepIndex++;
+			}
+			$outputStep .= "<br>";
 		}
+
+		return "<b>Cara Pembayaran</b> <br>" . $outputStep;
+	}
+
+	public function getEmailData($url)
+	{
+		$ch = curl_init($url);
+
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		$responseJson = curl_exec($ch);
+		curl_close($ch);
+
+		if (is_string($responseJson)) {
+			$responsePayment = json_decode($responseJson, false);
+		} else {
+			$responsePayment = $responseJson;
+		}
+
+		return $responsePayment;
 	}
 }

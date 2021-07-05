@@ -186,17 +186,14 @@ class JokulVa extends PaymentModule
 	private function _postValidation()
 	{
 		if (Tools::isSubmit('btnSubmit')) {
-			if (intval(Tools::getValue('server_dest')) == 0) {
-				if (!Tools::getValue('mall_id_dev'))
-					$this->_postErrors[] = $this->l('Client ID is required.');
-				elseif (!Tools::getValue('shared_key_dev'))
-					$this->_postErrors[] = $this->l('Secret Key is required.');
-			} else {
-				if (!Tools::getValue('mall_id_prod'))
-					$this->_postErrors[] = $this->l('Client ID is required.');
-				elseif (!Tools::getValue('shared_key_prod'))
-					$this->_postErrors[] = $this->l('Secret Key is required.');
-			}
+			if (!Tools::getValue('mall_id_dev'))
+				$this->$_postErrors[] = $this->l('Client ID is required.');
+			if (!Tools::getValue('shared_key_dev'))
+				$this->$_postErrors[] = $this->l('Secret Key is required.');
+			if (!Tools::getValue('mall_id_prod'))
+				$this->$_postErrors[] = $this->l('Client ID is required.');
+			if (!Tools::getValue('shared_key_prod'))
+				$this->$_postErrors[] = $this->l('Secret Key is required.');
 		}
 	}
 
@@ -225,10 +222,10 @@ class JokulVa extends PaymentModule
 	{
 		if (Tools::isSubmit('btnSubmit')) {
 			$this->_postValidation();
-			if (!sizeof($this->_postErrors)) {
+			if (!sizeof($this->$_postErrors)) {
 				$this->_postProcess();
 			} else {
-				foreach ($this->_postErrors as $err) {
+				foreach ($this->$_postErrors as $err) {
 					$this->_html .= '<div class="alert error">' . $err . '</div>';
 				}
 			}
@@ -286,7 +283,6 @@ class JokulVa extends PaymentModule
 			],
 		];
 
-		//CONFIGURATION FORM
 		$fields_form = [
 
 			'form'	 => [
@@ -887,6 +883,17 @@ class JokulVa extends PaymentModule
 			return Configuration::get('SHARED_KEY_PROD');
 		}
 	}
+
+	function doku_log($class, $log_msg, $invoiceNumber = "", $path)
+    {
+        $log_filename = "doku_log";
+        $log_header = date(DATE_ATOM, time()) . ' ' . get_class($class) . '---> ' . $invoiceNumber;
+        if (!file_exists($path.$log_filename)) {
+            mkdir($path.$log_filename, 0777, true);
+        }
+        $log_file_data = $path.$log_filename . '/log_' . date('d-M-Y') . '.log';
+        file_put_contents($log_file_data, $log_header . $log_msg . "\n", FILE_APPEND);
+    }
 
 	function guidv4($data = null)
 	{
