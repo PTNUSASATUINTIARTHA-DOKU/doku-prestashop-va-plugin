@@ -34,7 +34,7 @@ $data = array(
         "integration" => array(
             "name" => "prestashop-plugin",
             "module-name" => "jokul-va",
-            "version" => "1.1.1"
+            "version" => "1.2.0"
         )
     )
 );
