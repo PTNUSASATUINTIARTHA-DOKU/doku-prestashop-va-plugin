@@ -89,7 +89,11 @@
 
 		{if $PAYMENT_CHANNELS_PERMATA}
 			<ul><input type="radio" name="PAYMENTCHANNEL" value="PERMATA" onclick="return channelVA('PERMATA')"> Bank Permata VA</ul>
-		{/if}											
+		{/if}	
+
+		{if $PAYMENT_CHANNELS_BRI}
+			<ul><input type="radio" name="PAYMENTCHANNEL" value="BRI" onclick="return channelVA('BRI')"> Bank BRI VA</ul>
+		{/if}										
 
 		{if $PAYMENT_CHANNELS_DOKU_VA}
 			<ul><input type="radio" name="PAYMENTCHANNEL" value="DOKU_VA" onclick="return channelVA('DOKU_VA')"> Other Banks (VA by DOKU)</ul>
