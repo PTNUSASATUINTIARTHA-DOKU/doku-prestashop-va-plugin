@@ -97,6 +97,10 @@ class JokulVaRequestModuleFrontController extends ModuleFrontController
 					case "BCA":
 						$payment_channel = "BCA VA";
 						break;
+						
+					case "BRI":
+						$payment_channel = "BRI VA";
+						break;
 
 					default:
 						$payment_channel = "unknown channel";

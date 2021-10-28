@@ -33,6 +33,7 @@ $data = array(
     "additional_info" => array(
         "integration" => array(
             "name" => "prestashop-plugin",
+            "module-name" => "jokul-va",
             "version" => "1.1.1"
         )
     )
@@ -61,6 +62,8 @@ if ($paymentChannel == "DOKU_VA") {
     $requestTarget = "/bca-virtual-account/v2/payment-code";
 } else if ($paymentChannel == "PERMATA") {
     $requestTarget = "/permata-virtual-account/v2/payment-code";
+} else if ($paymentChannel == "BRI") {
+    $requestTarget = "/bri-virtual-account/v2/payment-code";
 }
 
 $dataWords = "Client-Id:" . $clientId . "\n" .

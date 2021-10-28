@@ -44,7 +44,7 @@ class JokulVa extends PaymentModule
 		$this->description      = $this->l('Accept payments through virtual account with Jokul. Make it easy for your customers to purchase on your store.');
 		$this->confirmUninstall = $this->l('Are you sure you want to uninstall?');
 
-		$this->va_channel       = array("MANDIRI", "MANDIRI_SYARIAH", "DOKU_VA", "BCA", "PERMATA");
+		$this->va_channel       = array("MANDIRI", "MANDIRI_SYARIAH", "DOKU_VA", "BCA", "PERMATA", "BRI");
 	}
 
 	public function install()
@@ -144,6 +144,7 @@ class JokulVa extends PaymentModule
 			Configuration::deleteByName('PAYMENT_CHANNELS_MANDIRI_SYARIAH');
 			Configuration::deleteByName('PAYMENT_CHANNELS_DOKU_VA');
 			Configuration::deleteByName('PAYMENT_CHANNELS_PERMATA');
+			Configuration::deleteByName('PAYMENT_CHANNELS_BRI');
 			Configuration::deleteByName('PAYMENT_CHANNELS_BCA');
 
 			parent::uninstall();
@@ -213,6 +214,7 @@ class JokulVa extends PaymentModule
 			Configuration::updateValue('PAYMENT_CHANNELS_MANDIRI_SYARIAH', 		trim(Tools::getValue('payment_channels_MANDIRI_SYARIAH')));
 			Configuration::updateValue('PAYMENT_CHANNELS_DOKU_VA', 				trim(Tools::getValue('payment_channels_DOKU_VA')));
 			Configuration::updateValue('PAYMENT_CHANNELS_PERMATA', 				trim(Tools::getValue('payment_channels_PERMATA')));
+			Configuration::updateValue('PAYMENT_CHANNELS_BRI', 					trim(Tools::getValue('payment_channels_BRI')));
 			Configuration::updateValue('PAYMENT_CHANNELS_BCA', 					trim(Tools::getValue('payment_channels_BCA')));
 		}
 		$this->_html .= '<div class="alert alert-success conf confirm"> ' . $this->l('Settings updated') . '</div>';
@@ -262,6 +264,11 @@ class JokulVa extends PaymentModule
 			[
 				'id_option' => 'PERMATA',
 				'name' 		=> 'Bank Permata VA',
+			],
+
+			[
+				'id_option' => 'BRI',
+				'name' 		=> 'Bank BRI VA',
 			],
 
 			[
@@ -577,6 +584,7 @@ class JokulVa extends PaymentModule
 			'PAYMENT_CHANNELS_MANDIRI_SYARIAH'  => Tools::safeOutput(Configuration::get('PAYMENT_CHANNELS_MANDIRI_SYARIAH')),
 			'PAYMENT_CHANNELS_DOKU_VA'  		=> Tools::safeOutput(Configuration::get('PAYMENT_CHANNELS_DOKU_VA')),
 			'PAYMENT_CHANNELS_PERMATA'  		=> Tools::safeOutput(Configuration::get('PAYMENT_CHANNELS_PERMATA')),
+			'PAYMENT_CHANNELS_BRI'  			=> Tools::safeOutput(Configuration::get('PAYMENT_CHANNELS_BRI')),
 			'PAYMENT_CHANNELS_BCA'  			=> Tools::safeOutput(Configuration::get('PAYMENT_CHANNELS_BCA')),
 			'PAYMENT_CHANNELS'					=> Tools::safeOutput(Configuration::get('PAYMENT_CHANNELS'))
 		);
@@ -863,6 +871,7 @@ class JokulVa extends PaymentModule
 			'payment_channels_MANDIRI_SYARIAH'	=> Tools::safeOutput(Tools::getValue('PAYMENT_CHANNELS_MANDIRI_SYARIAH', Configuration::get('PAYMENT_CHANNELS_MANDIRI_SYARIAH'))),
 			'payment_channels_DOKU_VA'			=> Tools::safeOutput(Tools::getValue('PAYMENT_CHANNELS_DOKU_VA', Configuration::get('PAYMENT_CHANNELS_DOKU_VA'))),
 			'payment_channels_PERMATA'			=> Tools::safeOutput(Tools::getValue('PAYMENT_CHANNELS_PERMATA', Configuration::get('PAYMENT_CHANNELS_PERMATA'))),
+			'payment_channels_BRI'				=> Tools::safeOutput(Tools::getValue('PAYMENT_CHANNELS_BRI', Configuration::get('PAYMENT_CHANNELS_BRI'))),
 			'payment_channels_BCA'				=> Tools::safeOutput(Tools::getValue('PAYMENT_CHANNELS_BCA', Configuration::get('PAYMENT_CHANNELS_BCA'))),
 			'expiry_time'						=> Tools::safeOutput(Tools::getValue('EXPIRY_TIME', Configuration::get('EXPIRY_TIME'))),
 			'server_dest'						=> Tools::safeOutput(Tools::getValue('SERVER_DEST', 	Configuration::get('SERVER_DEST'))),
