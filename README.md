@@ -18,6 +18,22 @@ Jokul makes it easy for you accept payments from various channels. Jokul also hi
     - Bank Mandiri VA
     - Bank Syariah Mandiri VA
     - DOKU VA
+    - BRI VA
+
+
+## DOKU PrestaShop Already Supported `doku_log`
+​
+This `doku_log` is useful to help simplify the process of checking if an issue occurs related to the payment process using the DOKU Plugin. If there are problems or problems using the plugin, you can contact our team by sending this doku_log file. `Doku_log` will record all transaction processes from any channel by date.
+
+​
+## How to use and take doku_log file?
+​
+1. Open your `prestashop` directory on your store's webserver.
+2. Create folder `doku_log` in your directory store's, so plugin will automatically track log in your store's webserver.
+3. Then check `doku_log` and open file in your store's webserver.
+4. You will see `doku log` file by date.
+5. And you can download the file. 
+6. If an issue occurs, you can send this `doku_log` file to the team to make it easier to find the cause of the issue.
 
 ## How to Install
 
