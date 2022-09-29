@@ -70,3 +70,28 @@ This `doku_log` is useful to help simplify the process of checking if an issue o
     - **Notification URL**: Copy this URL and paste the URL into the Jokul Back Office. Learn more about how to setup Notification URL for VA [here](https://jokul.doku.com/docs/docs/after-payment/setup-notification-url#virtual-account)
 1. Click Save button
 1. Now your customer should be able to see the payment channels and you start receiving payments
+
+## Additional Feature
+
+### Sub Account Configuration
+
+1. Login to your PrestaShop Admin Panel
+2. Click Module > Module Manager
+3. You will find "Jokul - VA ", click "Configure" button
+4. Scroll down and you will find Tick Button for Enabling Sub Account Feature
+5. Tick the button, then input your Sub Account ID
+6. Click Save.
+
+### Split Settlement Configuration
+
+1. Login to your PrestaShop Admin Panel
+2. Click Module > Module Manager
+3. You will find "Jokul - VA ", click "Configure" button
+4. Scroll down and you will find "List Bank Account"
+5. Click icon **+** to add bank account on the list
+6. And you will be redirect to Bank Account Details Configuration
+![Split Settlement Configuration - add bank account](https://i.ibb.co/dG01fNc/Screen-Shot-2022-09-29-at-16-36-35.png)
+7. Here is the fields that you required to set:
+   - **Bank Account ID** : Bank Account Settlement ID. You can get this ID from DOKU Back Office.
+   - **Type** : Choose what type that suit to your needs. Possible Option : Percentage and Fix Amount
+   - **Value** : Input the number. Adjust according to the type that you had choose.
