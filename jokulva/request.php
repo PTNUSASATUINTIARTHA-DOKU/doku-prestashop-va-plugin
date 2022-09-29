@@ -57,6 +57,7 @@ switch ($task) {
 						$status_no      = $config['DOKU_PAYMENT_RECEIVED'];
 						$jokulva->emptybag();
 						$jokulva->set_order_status($order_id, $status_no);
+						$jokulva->doku_log($jokulva, " VIRTUAL ACCOUNT UPDATE STATUS DOKU_PAYMENT_RECEIVED ", $json_data_input['order']['invoice_number'], '../../');
 
 						$checkStatusTrx = $jokulva->checkStatusTrx($trx);
 						if ($checkStatusTrx < 1) {
@@ -68,6 +69,7 @@ switch ($task) {
 						$status_no      = $config['DOKU_AWAITING_PAYMENT'];
 						$jokulva->emptybag();
 						$jokulva->set_order_status($order_id, $status_no);
+						$jokulva->doku_log($jokulva, " VIRTUAL ACCOUNT UPDATE STATUS DOKU_AWAITING_PAYMENT ", $json_data_input['order']['invoice_number'], '../../');
 					}
 				}
 			} else {
