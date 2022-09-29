@@ -13,33 +13,91 @@ if (!$_POST) {
 $invoiceNumber = $_POST['invoice_number'];
 $amount = $_POST['amount'];
 $orderId = $_POST['order_id'];
+$sub_account_data = Tools::safeOutput(Tools::getValue('set_sub_account_data', Configuration::get('set_sub_account_data')));
 
-$data = array(
-    "order" => array(
-        "invoice_number" => $invoiceNumber,
-        "amount" => $amount
-    ),
-    "virtual_account_info" => array(
-        "expired_time" => $_POST['EXP_TIME'],
-        "reusable_status" => false,
-        "info1" => '',
-        "info2" => '',
-        "info3" => '',
-    ),
-    "customer" => array(
-        "name" => $_POST['NAME'],
-        "email" => $_POST['EMAIL']
-    ),
-    "additional_info" => array(
-        "integration" => array(
-            "name" => "prestashop-plugin",
-            "module-name" => "jokul-va",
-            "version" => "1.2.0"
+$listContent = array();
+$listContent = Tools::safeOutput(Tools::getValue('LIST_BANK_VA', Configuration::get('LIST_BANK_VA')));
+$trimspace = preg_replace('/\s+/', '', $listContent);
+$listDataBank = json_decode(htmlspecialchars_decode($trimspace), true);
+
+if (count($listDataBank) > 0) {
+
+    foreach($listDataBank as $key => $item){
+        unset($listDataBank[$key]["bank_id"]);
+    }
+    
+    $data = array(
+        "order" => array(
+            "invoice_number" => $invoiceNumber,
+            "amount" => $amount
+        ),
+        "virtual_account_info" => array(
+            "expired_time" => $_POST['EXP_TIME'],
+            "reusable_status" => false,
+            "info1" => '',
+            "info2" => '',
+            "info3" => '',
+        ),
+        "customer" => array(
+            "name" => $_POST['NAME'],
+            "email" => $_POST['EMAIL']
+        ),
+        "additional_info" => $sub_account_data !== '' ? array(
+            "integration" => array(
+                "name" => "prestashop-plugin",
+                "module-name" => "jokul-va",
+                "version" => "1.2.1"
+            ),
+            "account" => array(
+                "id" =>  $sub_account_data
+            ),
+            "settlement"=> $listDataBank
+        ): array(
+            "integration" => array(
+                "name" => "prestashop-plugin",
+                "module-name" => "jokul-va",
+                "version" => "1.2.1"
+            ),
+            "settlement"=> $listDataBank
         )
-    )
-);
+    );
+} else {
+    $data = array(
+        "order" => array(
+            "invoice_number" => $invoiceNumber,
+            "amount" => $amount
+        ),
+        "virtual_account_info" => array(
+            "expired_time" => $_POST['EXP_TIME'],
+            "reusable_status" => false,
+            "info1" => '',
+            "info2" => '',
+            "info3" => '',
+        ),
+        "customer" => array(
+            "name" => $_POST['NAME'],
+            "email" => $_POST['EMAIL']
+        ),
+        "additional_info" => $sub_account_data !== '' ? array(
+            "integration" => array(
+                "name" => "prestashop-plugin",
+                "module-name" => "jokul-va",
+                "version" => "1.2.1"
+            ),
+            "account" => array(
+                "id" =>  $sub_account_data
+            )
+        ): array(
+            "integration" => array(
+                "name" => "prestashop-plugin",
+                "module-name" => "jokul-va",
+                "version" => "1.2.1"
+            )
+        )
+    );
+}
 
-$jokulva->doku_log($jokulva, " VIRTUAL ACCOUNT REQUEST ".json_encode($data), $invoiceNumber, '../../');
+$jokulva->doku_log($jokulva, " VIRTUAL ACCOUNT REQUEST ".json_encode($data, JSON_PRETTY_PRINT), $invoiceNumber, '../../');
 
 $config = $jokulva->getServerConfig();
 $bodyJson = json_encode($data);
