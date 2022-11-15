@@ -1111,7 +1111,7 @@ class JokulVa extends PaymentModule
 			$orderState->color = $stateConfig['color'];
 			$orderState->hidden = false;
 			$orderState->delivery = false;
-			$orderState->logable = true;
+			$orderState->logable = false;
 			$orderState->invoice = false;
 			$orderState->paid = false;
 
