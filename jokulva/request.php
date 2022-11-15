@@ -54,7 +54,7 @@ switch ($task) {
 					if (strtolower($json_data_input['transaction']['status']) == strtolower('SUCCESS')) {
 						$trx['message'] = "Notify process message come from DOKU. Success : completed";
 						$status         = "completed";
-						$status_no      = $config['DOKU_PAYMENT_RECEIVED'];
+						$status_no      = Configuration::get('PS_OS_PAYMENT');
 						$jokulva->emptybag();
 						$jokulva->set_order_status($order_id, $status_no);
 						$jokulva->doku_log($jokulva, " VIRTUAL ACCOUNT UPDATE STATUS DOKU_PAYMENT_RECEIVED ", $json_data_input['order']['invoice_number'], '../../');
