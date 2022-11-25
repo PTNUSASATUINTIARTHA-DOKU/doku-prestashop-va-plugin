@@ -645,12 +645,12 @@ class JokulVa extends PaymentModule
 
 		$environment = [
 			[
-				'id_option' => 'https://api-sandbox.doku.com',
+				'id_option' => 0,
 				'name' 		=> 'Sandbox',
 			],
 
 			[
-				'id_option' => 'https://jokul.doku.com',
+				'id_option' => 1,
 				'name' 		=> 'Production',
 			],
 		];
@@ -1072,14 +1072,6 @@ class JokulVa extends PaymentModule
 	{
 		$stateConfig = array();
 		try {
-			$stateConfig['color'] = '#00ff00';
-			$this->addOrderStatus(
-				'DOKU_PAYMENT_RECEIVED',
-				'Virtual Account Payment Received',
-				$stateConfig,
-				false,
-				''
-			);
 			$stateConfig['color'] = 'blue';
 			$this->addOrderStatus(
 				'DOKU_AWAITING_PAYMENT',
@@ -1111,7 +1103,7 @@ class JokulVa extends PaymentModule
 			$orderState->color = $stateConfig['color'];
 			$orderState->hidden = false;
 			$orderState->delivery = false;
-			$orderState->logable = true;
+			$orderState->logable = false;
 			$orderState->invoice = false;
 			$orderState->paid = false;
 
@@ -1307,7 +1299,7 @@ class JokulVa extends PaymentModule
 
 		$DOKU_INITIALIZE_PAYMENT = Tools::safeOutput(Configuration::get('DOKU_INITIALIZE_PAYMENT'));
 		$DOKU_AWAITING_PAYMENT = Tools::safeOutput(Configuration::get('DOKU_AWAITING_PAYMENT'));
-		$DOKU_PAYMENT_RECEIVED = Tools::safeOutput(Configuration::get('DOKU_PAYMENT_RECEIVED'));
+		$DOKU_PAYMENT_RECEIVED = Tools::safeOutput(Configuration::get('PS_OS_PAYMENT'));
 
 		$config = array(
 			"MALL_ID" => $MALL_ID,
