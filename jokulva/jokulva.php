@@ -645,12 +645,12 @@ class JokulVa extends PaymentModule
 
 		$environment = [
 			[
-				'id_option' => 'https://api-sandbox.doku.com',
+				'id_option' => 0,
 				'name' 		=> 'Sandbox',
 			],
 
 			[
-				'id_option' => 'https://jokul.doku.com',
+				'id_option' => 1,
 				'name' 		=> 'Production',
 			],
 		];
